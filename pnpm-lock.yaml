@@ -59,6 +59,9 @@ importers:
       mongoose:
         specifier: ^9.6.0
         version: 9.7.3
+      node-mailer:
+        specifier: ^0.1.1
+        version: 0.1.1
       passport:
         specifier: ^0.7.0
         version: 0.7.0
@@ -2685,9 +2688,17 @@ packages:
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
 
+  node-mailer@0.1.1:
+    resolution: {integrity: sha512-L3YwTtPodsYr1sNPW/PxXw0rSOr/ldygaIph2YtXDwLGt9l8km/OjM0Wrr57Yf07JEEnDb3wApjhVdR0k5v0kw==}
+    deprecated: node-mailer is not maintained
+
   node-releases@2.0.50:
     resolution: {integrity: sha512-J6l92tKHX6w8Jy5nO1Vuc01NoIiRGi/d6qBKVxh+IQ8Cr3b6HbVNfKiF8ZpFKufTwpwxMmce2W3iQZ861ZRyTg==}
     engines: {node: '>=18'}
+
+  nodemailer@9.0.1:
+    resolution: {integrity: sha512-Gwv8SQewT616ZM/URn0H54b8PWo/Wum7md3EW2aWy1lO27+WZCX+Xyak3J+NlmHUjDh5ME+uesJUDRbR3Ye8Bw==}
+    engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -6394,7 +6405,13 @@ snapshots:
 
   node-int64@0.4.0: {}
 
+  node-mailer@0.1.1:
+    dependencies:
+      nodemailer: 9.0.1
+
   node-releases@2.0.50: {}
+
+  nodemailer@9.0.1: {}
 
   normalize-path@3.0.0: {}
 
