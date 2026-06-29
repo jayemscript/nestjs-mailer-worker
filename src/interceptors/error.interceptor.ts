@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ErrorResponseDto } from '../dtos/error-response.dto';
+import { ErrorResponseDto } from 'src/common/dtos/error-response.dto';
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {
