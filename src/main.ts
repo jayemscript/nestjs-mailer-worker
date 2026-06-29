@@ -14,9 +14,6 @@ async function bootstrap() {
   expressApp.set('trust proxy', 1);
   expressApp.disable('x-powered-by');
 
-  // ─── Global Prefix ─────────────────────────────────────────────────────────
-  app.setGlobalPrefix('api');
-
   // ─── CORS ──────────────────────────────────────────────────────────────────
   const allowedOrigins = configService.get<string[]>('cors.origins') ?? [];
   app.enableCors({
@@ -48,7 +45,7 @@ async function bootstrap() {
   console.log(
     `[nestjs-mailer-worker] running on port ${port} | mode: ${nodeEnv}`,
   );
-  console.log(`Health: http://localhost:${port}/api`);
+  console.log(`Health: http://localhost:${port}`);
 }
 
 bootstrap();

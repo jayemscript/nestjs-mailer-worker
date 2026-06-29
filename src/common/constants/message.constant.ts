@@ -1,3 +1,4 @@
+//src/constants/message.constant.ts
 export const MESSAGES = {
   SUCCESS: {
     EMAIL_SENT: 'Email Has been sent',

@@ -1,4 +1,4 @@
-//src/common/dtos/auth-response.dto.ts
+//src/common/dtos/error-response.dto.ts
 export class ErrorResponseDto {
   statusCode!: number;
   message!: string;

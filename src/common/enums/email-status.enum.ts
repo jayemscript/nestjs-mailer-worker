@@ -2,7 +2,7 @@
 export enum EmailStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
-  SEND = 'sent',
+  SENT = 'sent',
   FAILED = 'failed',
   RETRIED = 'retried',
 }

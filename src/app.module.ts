@@ -5,6 +5,7 @@ import configuration from 'src/common/configs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProviderModule } from './provider/provider.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProviderModule } from './provider/provider.module';
       }),
     }),
     ProviderModule,
+    MailModule,
   ],
 
   controllers: [AppController],
