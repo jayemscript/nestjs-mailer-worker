@@ -1,6 +1,6 @@
 # NestJS Mailer Worker
 
-A standalone email microservice built with **NestJS**, **TypeORM**, and **PostgreSQL**.
+A standalone email microservice built with **NestJS**, and **MongodDB**.
 
 Designed for applications that need a centralized email infrastructure with support for multiple email providers, custom templates, email logging, queue processing, and future extensibility.
 
@@ -18,13 +18,13 @@ Instead of sending emails directly from your API, applications can publish email
 
 Send emails using different providers:
 
-* SMTP
-* Gmail
-* Google Workspace
-* Microsoft 365
-* Outlook
-* Custom SMTP Providers
-* Future provider integrations
+- SMTP
+- Gmail
+- Google Workspace
+- Microsoft 365
+- Outlook
+- Custom SMTP Providers
+- Future provider integrations
 
 ---
 
@@ -32,11 +32,11 @@ Send emails using different providers:
 
 Create and manage:
 
-* HTML emails
-* Plain text emails
-* Dynamic variables
-* Reusable templates
-* Provider-independent templates
+- HTML emails
+- Plain text emails
+- Dynamic variables
+- Reusable templates
+- Provider-independent templates
 
 Example:
 
@@ -53,10 +53,10 @@ Background email processing using queues.
 
 Benefits:
 
-* Faster API responses
-* Retry support
-* Failure handling
-* High-volume email delivery
+- Faster API responses
+- Retry support
+- Failure handling
+- High-volume email delivery
 
 ---
 
@@ -66,12 +66,12 @@ Track every email sent.
 
 Store:
 
-* Recipient
-* Subject
-* Provider
-* Status
-* Error messages
-* Timestamp
+- Recipient
+- Subject
+- Provider
+- Status
+- Error messages
+- Timestamp
 
 ---
 
@@ -79,11 +79,11 @@ Store:
 
 Monitor email lifecycle:
 
-* Pending
-* Processing
-* Sent
-* Failed
-* Retried
+- Pending
+- Processing
+- Sent
+- Failed
+- Retried
 
 ---
 
@@ -101,14 +101,14 @@ POST /emails/send
 
 ### Database Persistence
 
-Powered by PostgreSQL and TypeORM.
+Powered by Mongodb
 
 Store:
 
-* Templates
-* Provider configurations
-* Email logs
-* Delivery history
+- Templates
+- Provider configurations
+- Email logs
+- Delivery history
 
 ---
 
@@ -118,49 +118,48 @@ Built with NestJS modules.
 
 Easy to extend:
 
-* Add new providers
-* Add webhooks
-* Add analytics
-* Add dashboards
-* Add notification channels
+- Add new providers
+- Add webhooks
+- Add analytics
+- Add dashboards
+- Add notification channels
 
 ---
 
 ## Technology Stack
 
-* NestJS
-* TypeScript
-* TypeORM
-* PostgreSQL
-* BullMQ (optional)
-* Redis (optional)
+- NestJS
+- TypeScript
+- MongoDB
+- BullMQ (optional)
+- Redis (optional)
 
 ---
 
 ## Use Cases
 
-* User registration emails
-* Password reset emails
-* Verification emails
-* Notifications
-* Marketing campaigns
-* Transactional emails
-* Internal system alerts
+- User registration emails
+- Password reset emails
+- Verification emails
+- Notifications
+- Marketing campaigns
+- Transactional emails
+- Internal system alerts
 
 ---
 
 ## Future Roadmap
 
-* [ ] Provider failover support
-* [ ] Email analytics
-* [ ] Open tracking
-* [ ] Click tracking
-* [ ] Webhook integrations
-* [ ] Template editor
-* [ ] Admin dashboard
-* [ ] Multi-tenant support
-* [ ] Rate limiting
-* [ ] Scheduled emails
+- [ ] Provider failover support
+- [ ] Email analytics
+- [ ] Open tracking
+- [ ] Click tracking
+- [ ] Webhook integrations
+- [ ] Template editor
+- [ ] Admin dashboard
+- [ ] Multi-tenant support
+- [ ] Rate limiting
+- [ ] Scheduled emails
 
 ---
 
@@ -170,11 +169,11 @@ Many applications need email capabilities but don't want email logic mixed into 
 
 NestJS Mailer Worker provides a dedicated service responsible for:
 
-* Email delivery
-* Provider management
-* Logging
-* Monitoring
-* Reliability
+- Email delivery
+- Provider management
+- Logging
+- Monitoring
+- Reliability
 
 This keeps your core application clean while providing a scalable email infrastructure.
 
