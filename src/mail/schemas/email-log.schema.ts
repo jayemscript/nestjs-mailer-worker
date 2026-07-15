@@ -1,4 +1,3 @@
-//src/mail/schemas/email-log.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { EmailStatus } from 'src/common/enums/email-status.enum';
@@ -17,10 +16,20 @@ export class EmailLog {
   @Prop({ required: true })
   subject!: string;
 
+  @Prop({ required: false, type: String })
+  html?: string;
+
+  @Prop({ required: false, type: String })
+  text?: string;
+
   @Prop({ required: true, enum: ProviderType })
   provider!: ProviderType;
 
-  @Prop({ required: true, enum: EmailStatus, default: EmailStatus.PENDING })
+  @Prop({
+    required: true,
+    enum: EmailStatus,
+    default: EmailStatus.PENDING,
+  })
   status!: EmailStatus;
 
   @Prop({ required: false })

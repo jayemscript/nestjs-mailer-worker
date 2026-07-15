@@ -23,6 +23,8 @@ export class MailService {
       appId: dto.appId,
       to: dto.to,
       subject: dto.subject,
+      html: dto.html,
+      text: dto.text,
       from: dto.from,
       provider: ProviderType.GMAIL,
       status: EmailStatus.PENDING,
@@ -43,13 +45,16 @@ export class MailService {
       this.logger.log(`Email sent to ${dto.to}`);
     } catch (error) {
       log.status = EmailStatus.FAILED;
-      log.errorMessage = (error as Error).message;
+      log.errorMessage =
+        error instanceof Error ? error.message : 'Unknown email error';
+
       await log.save();
 
       this.logger.error(
         `Failed to send email to ${dto.to}`,
-        (error as Error).stack,
+        error instanceof Error ? error.stack : undefined,
       );
+
       throw error;
     }
 
