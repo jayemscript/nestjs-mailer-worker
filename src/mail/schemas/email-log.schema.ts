@@ -9,6 +9,9 @@ export type EmailLogDocument = EmailLog & Document;
 @Schema({ timestamps: true, collection: 'email_logs' })
 export class EmailLog {
   @Prop({ required: true })
+  appId!: string;
+
+  @Prop({ required: true })
   to!: string;
 
   @Prop({ required: true })

@@ -20,6 +20,7 @@ export class MailService {
 
   async send(dto: SendEmailDto): Promise<EmailLog> {
     const log = await this.emailLogModel.create({
+      appId: dto.appId,
       to: dto.to,
       subject: dto.subject,
       from: dto.from,

@@ -6,11 +6,16 @@ import {
   Matches,
   IsArray,
   ArrayNotEmpty,
+  IsNotEmpty,
 } from 'class-validator';
 import { MESSAGES } from 'src/common/constants/message.constant';
 import { REGEX } from 'src/common/constants/regex.constants';
 
 export class SendEmailDto {
+  @IsString()
+  @IsNotEmpty()
+  appId!: string;
+
   @IsEmail({}, { message: MESSAGES.VALIDATION.INVALID_EMAIL })
   to!: string;
 
