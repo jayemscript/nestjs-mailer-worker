@@ -1,10 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { setServers } from 'node:dns';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const dnsServers = process.env.DNS_SERVERS?.split(',')
+    .map((server) => server.trim())
+    .filter(Boolean);
+
+  if (dnsServers?.length) {
+    setServers(dnsServers);
+  }
+
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);

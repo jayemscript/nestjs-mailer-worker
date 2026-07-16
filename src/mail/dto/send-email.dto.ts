@@ -4,12 +4,12 @@ import {
   IsOptional,
   IsString,
   Matches,
-  IsArray,
-  ArrayNotEmpty,
   IsNotEmpty,
+  IsEnum,
 } from 'class-validator';
 import { MESSAGES } from 'src/common/constants/message.constant';
 import { REGEX } from 'src/common/constants/regex.constants';
+import { ProviderType } from 'src/common/enums/provider-type.enum';
 
 export class SendEmailDto {
   @IsString()
@@ -21,6 +21,12 @@ export class SendEmailDto {
 
   @IsString({ message: MESSAGES.VALIDATION.SUBJECT_REQUIRED })
   subject!: string;
+
+  @IsOptional()
+  @IsEnum(ProviderType, {
+    message: `provider must be one of: ${Object.values(ProviderType).join(', ')}`,
+  })
+  provider?: ProviderType;
 
   @IsOptional()
   @IsString()

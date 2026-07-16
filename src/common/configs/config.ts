@@ -8,6 +8,17 @@ export default () => ({
   redis: {
     url: process.env.REDIS_URL ?? 'redis://localhost:6379',
   },
+  mail: {
+    provider: process.env.MAIL_PROVIDER ?? 'gmail',
+    smtp: {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT ?? '465', 10),
+      secure: (process.env.SMTP_SECURE ?? 'true').toLowerCase() === 'true',
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+      from: process.env.SMTP_FROM,
+    },
+  },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'changeme',
   },

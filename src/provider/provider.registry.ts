@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IMailAdapter } from './adapters/base.adapter';
 import { ProviderType } from '../common/enums/provider-type.enum';
 
@@ -13,7 +13,11 @@ export class ProviderRegistry {
   resolve(type: ProviderType): IMailAdapter {
     const adapter = this.registry.get(type);
     if (!adapter) {
-      throw new Error(`No adapter registered for provider: ${type}`);
+      throw new BadRequestException(
+        `Mail provider is not available: ${type}. Registered providers: ${[
+          ...this.registry.keys(),
+        ].join(', ')}`,
+      );
     }
     return adapter;
   }

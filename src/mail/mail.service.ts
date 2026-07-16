@@ -1,5 +1,6 @@
 //src/mail/mail.service.ts
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProviderService } from 'src/provider/provider.service';
@@ -14,11 +15,13 @@ export class MailService {
 
   constructor(
     private readonly providerService: ProviderService,
+    private readonly configService: ConfigService,
     @InjectModel(EmailLog.name)
     private readonly emailLogModel: Model<EmailLogDocument>,
   ) {}
 
   async send(dto: SendEmailDto): Promise<EmailLog> {
+    const provider = this.getProvider(dto.provider);
     const log = await this.emailLogModel.create({
       appId: dto.appId,
       to: dto.to,
@@ -26,12 +29,12 @@ export class MailService {
       html: dto.html,
       text: dto.text,
       from: dto.from,
-      provider: ProviderType.GMAIL,
+      provider,
       status: EmailStatus.PENDING,
     });
 
     try {
-      await this.providerService.send(ProviderType.GMAIL, {
+      await this.providerService.send(provider, {
         to: dto.to,
         subject: dto.subject,
         html: dto.html,
@@ -59,5 +62,24 @@ export class MailService {
     }
 
     return log;
+  }
+
+  private getProvider(requestedProvider?: ProviderType): ProviderType {
+    if (requestedProvider) {
+      return requestedProvider;
+    }
+
+    const configuredProvider = this.configService.get<string>(
+      'mail.provider',
+      ProviderType.GMAIL,
+    );
+
+    if (
+      !Object.values(ProviderType).includes(configuredProvider as ProviderType)
+    ) {
+      throw new Error(`Unsupported mail provider: ${configuredProvider}`);
+    }
+
+    return configuredProvider as ProviderType;
   }
 }
