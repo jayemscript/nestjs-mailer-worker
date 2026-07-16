@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { EmailStatus } from 'src/common/enums/email-status.enum';
-import { ProviderType } from 'src/common/enums/provider-type.enum';
+import { EmailStatus } from '../../common/enums/email-status.enum';
+import { ProviderType } from '../../common/enums/provider-type.enum';
 
 export type EmailLogDocument = EmailLog & Document;
 

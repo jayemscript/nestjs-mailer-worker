@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
 import { IMailAdapter } from './base.adapter';
-import { MailPayload } from 'src/interface/mail-payload.interface';
+import { MailPayload } from '../../interface/mail-payload.interface';
 
 @Injectable()
 export class GmailAdapter implements IMailAdapter {

@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { SendEmailDto } from './dto/send-email.dto';
-import { CommonResponseDto } from 'src/common/dtos/common-response.dto';
-import { MESSAGES } from 'src/common/constants/message.constant';
+import { CommonResponseDto } from '../common/dtos/common-response.dto';
+import { MESSAGES } from '../common/constants/message.constant';
 import { EmailLog } from './schemas/email-log.schema';
-import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
+import { ApiKeyGuard } from '../common/guards/api-key.guard';
 
 @UseGuards(ApiKeyGuard)
 @Controller('mail')

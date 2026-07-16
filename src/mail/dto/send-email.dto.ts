@@ -7,9 +7,9 @@ import {
   IsNotEmpty,
   IsEnum,
 } from 'class-validator';
-import { MESSAGES } from 'src/common/constants/message.constant';
-import { REGEX } from 'src/common/constants/regex.constants';
-import { ProviderType } from 'src/common/enums/provider-type.enum';
+import { MESSAGES } from '../../common/constants/message.constant';
+import { REGEX } from '../../common/constants/regex.constants';
+import { ProviderType } from '../../common/enums/provider-type.enum';
 
 export class SendEmailDto {
   @IsString()

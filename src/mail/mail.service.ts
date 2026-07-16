@@ -3,9 +3,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ProviderService } from 'src/provider/provider.service';
-import { ProviderType } from 'src/common/enums/provider-type.enum';
-import { EmailStatus } from 'src/common/enums/email-status.enum';
+import { ProviderService } from '../provider/provider.service';
+import { ProviderType } from '../common/enums/provider-type.enum';
+import { EmailStatus } from '../common/enums/email-status.enum';
 import { SendEmailDto } from './dto/send-email.dto';
 import { EmailLog, EmailLogDocument } from './schemas/email-log.schema';
 

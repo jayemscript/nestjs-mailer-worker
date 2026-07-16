@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter } from 'nodemailer';
-import { MailPayload } from 'src/interface/mail-payload.interface';
+import { MailPayload } from '../../interface/mail-payload.interface';
 import { IMailAdapter } from './base.adapter';
 
 @Injectable()
