@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { setServers } from 'node:dns';
 import cookieParser from 'cookie-parser';
+import { Request, Response } from 'express';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+let serverlessApp: Promise<INestApplication> | undefined;
+
+async function createApplication(): Promise<INestApplication> {
   const dnsServers = process.env.DNS_SERVERS?.split(',')
     .map((server) => server.trim())
     .filter(Boolean);
@@ -45,6 +48,13 @@ async function bootstrap() {
     }),
   );
 
+  return app;
+}
+
+async function bootstrap(): Promise<void> {
+  const app = await createApplication();
+  const configService = app.get(ConfigService);
+
   // ─── Start ─────────────────────────────────────────────────────────────────
   const port = configService.get<number>('port') ?? 4001;
   const nodeEnv = configService.get<string>('nodeEnv');
@@ -57,4 +67,24 @@ async function bootstrap() {
   console.log(`Health: http://localhost:${port}`);
 }
 
-bootstrap();
+export default async function handler(
+  request: Request,
+  response: Response,
+): Promise<void> {
+  serverlessApp ??= createApplication().then(async (app) => {
+    await app.init();
+    return app;
+  });
+
+  const app = await serverlessApp;
+  const expressApp = app.getHttpAdapter().getInstance() as (
+    request: Request,
+    response: Response,
+  ) => void;
+
+  expressApp(request, response);
+}
+
+if (process.env.VERCEL !== '1') {
+  void bootstrap();
+}

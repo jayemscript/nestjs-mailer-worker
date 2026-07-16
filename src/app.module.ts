@@ -18,6 +18,7 @@ import { MailModule } from './mail/mail.module';
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('mongo.uri'),
         dbName: config.get<string>('mongo.dbName'),
+        lazyConnection: process.env.VERCEL === '1',
       }),
     }),
     ProviderModule,
