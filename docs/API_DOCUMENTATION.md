@@ -1,142 +1,215 @@
 # API Documentation
-### NestJS Mailer Worker
 
----
+## Base URL and authentication
 
-## Base URL
+Local base URL: `http://localhost:7002`
 
-```
-http://localhost:4001
-```
+Every API endpoint requires an API key. Send it as:
 
----
-
-## Endpoints
-
-### Send Email
-
-**`POST /mail/send`**
-
-Sends a single email via Gmail OAuth2.
-
----
-
-#### Request
-
-**Headers**
-
-```
-Content-Type: application/json
+```http
+X-API-KEY: your_api_key
 ```
 
-**Body**
+Interactive documentation is available at:
 
-| Field     | Type     | Required | Description                          |
-|-----------|----------|----------|--------------------------------------|
-| `to`      | `string` | Yes      | Recipient email address              |
-| `subject` | `string` | Yes      | Email subject                        |
-| `html`    | `string` | No       | HTML body content                    |
-| `text`    | `string` | No       | Plain text body content              |
-| `from`    | `string` | No       | Sender override (defaults to `GMAIL_USER`) |
-
-> At least one of `html` or `text` should be provided.
-
----
-
-#### cURL
-
-```bash
-curl -X POST http://localhost:4001/mail/send \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "recipient@example.com",
-    "subject": "Hello from Mailer Worker",
-    "html": "<h1>Hello!</h1><p>This is a test email.</p>"
-  }'
+```text
+http://localhost:7002/docs
 ```
 
----
+Click **Authorize**, paste the API key, then use **Try it out** to make calls
+without Postman.
 
-#### Postman
+## Required environment value
 
-1. Method: `POST`
-2. URL: `http://localhost:4001/mail/send`
-3. Body → raw → JSON:
+Database SMTP account credentials are encrypted using AES-256-GCM. Set this in
+your environment before creating a mail account:
+
+```env
+MAIL_CREDENTIALS_ENCRYPTION_KEY=your_32_byte_base64_or_64_character_hex_key
+```
+
+Keep this key in deployment secrets. Changing it makes existing encrypted
+credentials unreadable unless you implement key rotation.
+
+## Applications
+
+Applications identify the system that sends an email. Only an `active`
+application can send mail. Administrators can still manage mail accounts for a
+deactivated application.
+
+### Create application
+
+`POST /applications`
 
 ```json
 {
-  "to": "recipient@example.com",
-  "subject": "Hello from Mailer Worker",
-  "html": "<h1>Hello!</h1><p>This is a test email.</p>"
+  "appId": "meal-guides-api",
+  "name": "The Meal Guides API",
+  "description": "Customer meal-plan application",
+  "status": "active"
 }
 ```
 
----
+### List applications
 
-#### Success Response `200 OK`
+`GET /applications`
+
+### Update application
+
+`PATCH /applications/:appId`
 
 ```json
 {
-  "status": 200,
-  "message": "Email Has been sent",
-  "data": {
-    "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
-    "to": "recipient@example.com",
-    "subject": "Hello from Mailer Worker",
-    "provider": "GMAIL",
-    "status": "SENT",
-    "from": "you@gmail.com",
-    "createdAt": "2026-06-29T10:00:00.000Z",
-    "updatedAt": "2026-06-29T10:00:01.000Z"
+  "status": "deactivated"
+}
+```
+
+## Mail accounts
+
+Mail accounts store GoDaddy SMTP settings and encrypted mailbox credentials.
+One account can be shared with multiple applications using `appIds`. Passwords
+and encrypted credential values are never returned by the API.
+
+Database-managed mail accounts currently support `smtp`. Gmail continues to
+use its existing environment/OAuth configuration.
+
+### Create mail account
+
+`POST /mail-accounts`
+
+```json
+{
+  "name": "GoDaddy Support",
+  "description": "Shared customer-support mailbox",
+  "provider": "smtp",
+  "appIds": ["meal-guides-api", "admin-api"],
+  "status": "active",
+  "credentials": {
+    "host": "smtpout.secureserver.net",
+    "port": 465,
+    "secure": true,
+    "user": "support@example.com",
+    "pass": "mailbox-password",
+    "from": "The Meal Guides Team <connect@themealguides.com>"
   }
 }
 ```
 
----
+Each `appId` in `appIds` must already exist. The account can be used only by
+an application listed there.
 
-#### Error Responses
+### List or get accounts
 
-**`400 Bad Request`** — Validation failed
+- `GET /mail-accounts`
+- `GET /mail-accounts/:id`
 
-```json
-{
-  "statusCode": 400,
-  "message": "Invalid Email format",
-  "timestamp": "2026-06-29T10:00:00.000Z",
-  "path": "/mail/send"
-}
-```
+### Update account
 
-**`500 Internal Server Error`** — Send failed (e.g. bad credentials)
+`PATCH /mail-accounts/:id`
+
+Use this endpoint to rename an account, change `appIds`, deactivate it, or
+replace its credentials:
 
 ```json
 {
-  "statusCode": 500,
-  "message": "Invalid login: 535-5.7.8 Username and Password not accepted",
-  "timestamp": "2026-06-29T10:00:00.000Z",
-  "path": "/mail/send"
+  "appIds": ["meal-guides-api", "admin-api", "mobile-api"],
+  "status": "active"
 }
 ```
 
----
+## Send email
 
-## Email Status Values
+`POST /mail/send`
 
-| Status       | Description                        |
-|--------------|------------------------------------|
-| `PENDING`    | Log created, send not yet attempted |
-| `SENT`       | Successfully delivered to provider  |
-| `FAILED`     | Send attempt failed, error logged   |
+`origin` is always required:
 
----
+- `system`: generated by your application; no `userId` is needed.
+- `user`: initiated by an end user; `userId` is required and is stored in the
+  email log.
 
-## Roadmap
+### System-generated email through a database SMTP account
 
-| Feature              | Status      |
-|----------------------|-------------|
-| Single email send    | ✅ Done     |
-| Multiple recipients  | 🔜 Planned  |
-| CC / BCC support     | 🔜 Planned  |
-| Template-based send  | 🔜 Planned  |
-| Queue-based sending  | 🔜 Planned  |
-| Other providers      | 🔜 Planned  |
+```json
+{
+  "appId": "meal-guides-api",
+  "origin": "system",
+  "mailAccountId": "MONGODB_MAIL_ACCOUNT_ID",
+  "to": "customer@example.com",
+  "subject": "Welcome",
+  "html": "<p>Welcome to The Meal Guides.</p>"
+}
+```
+
+The application must be active, the mail account must be active, and that
+account must include the application in its `appIds`.
+
+### User-generated email
+
+```json
+{
+  "appId": "meal-guides-api",
+  "origin": "user",
+  "userId": "user_123",
+  "mailAccountId": "MONGODB_MAIL_ACCOUNT_ID",
+  "to": "team@example.com",
+  "subject": "Customer message",
+  "text": "I need help with my meal plan."
+}
+```
+
+### Existing default provider configuration
+
+If `mailAccountId` is omitted, the existing configured provider is used. You
+may set `provider` to `smtp` or `gmail`; otherwise `MAIL_PROVIDER` is used.
+
+## Bulk send
+
+`POST /mail/send-bulk`
+
+Send 1 to 100 emails in a request:
+
+```json
+{
+  "emails": [
+    {
+      "appId": "meal-guides-api",
+      "origin": "system",
+      "mailAccountId": "MONGODB_MAIL_ACCOUNT_ID",
+      "to": "first@example.com",
+      "subject": "Update",
+      "text": "First update"
+    },
+    {
+      "appId": "meal-guides-api",
+      "origin": "system",
+      "mailAccountId": "MONGODB_MAIL_ACCOUNT_ID",
+      "to": "second@example.com",
+      "subject": "Update",
+      "text": "Second update"
+    }
+  ]
+}
+```
+
+Every email's application is checked before sending begins.
+Emails are sent one at a time with a configurable delay to avoid GoDaddy SMTP
+burst throttling. Set `BULK_SEND_DELAY_MS` in the environment (default: `750`).
+
+## Email logs
+
+- `GET /mail` — all email logs.
+- `GET /mail/app/:appId` — logs for an application.
+- `GET /mail/app/:appId/user/:userId` — user-originated logs for one
+  application and end user.
+
+## Email statuses
+
+| Status | Meaning |
+| --- | --- |
+| `PENDING` | Log was created and delivery has not completed yet. |
+| `SENT` | The provider accepted the email. |
+| `FAILED` | The send attempt failed; the error is stored in the log. |
+
+For SMTP sends, logs also store the provider message ID, accepted recipients,
+rejected recipients, and the SMTP response. `SENT` means the SMTP provider
+accepted the email; it is not final recipient-inbox delivery confirmation.

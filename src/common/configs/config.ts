@@ -10,6 +10,9 @@ export default () => ({
   },
   mail: {
     provider: process.env.MAIL_PROVIDER ?? 'gmail',
+    bulk: {
+      delayMs: parseInt(process.env.BULK_SEND_DELAY_MS ?? '750', 10),
+    },
     smtp: {
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT ?? '465', 10),
@@ -18,6 +21,7 @@ export default () => ({
       pass: process.env.SMTP_PASS,
       from: process.env.SMTP_FROM,
     },
+    credentialsEncryptionKey: process.env.MAIL_CREDENTIALS_ENCRYPTION_KEY,
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'changeme',

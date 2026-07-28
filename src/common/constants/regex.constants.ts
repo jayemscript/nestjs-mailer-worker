@@ -2,6 +2,10 @@
 export const REGEX = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 
+  // Bare email address or a display name followed by <email@example.com>.
+  EMAIL_FROM:
+    /^(?:[^<>\r\n]+ <[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+>|[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+)$/,
+
   USERNAME: /^[a-zA-Z0-9_]{3,20}$/,
 
   PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\w@$!%*?&#-]{8,}$/,

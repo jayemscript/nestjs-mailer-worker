@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
-import { IMailAdapter } from './base.adapter';
+import { IMailAdapter, MailSendResult } from './base.adapter';
 import { MailPayload } from '../../interface/mail-payload.interface';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class GmailAdapter implements IMailAdapter {
     });
   }
 
-  async send(payload: MailPayload): Promise<void> {
+  async send(payload: MailPayload): Promise<MailSendResult> {
     const from = payload.from ?? this.configService.get<string>('GMAIL_USER');
 
     const email = [
@@ -43,11 +43,13 @@ export class GmailAdapter implements IMailAdapter {
       .replace(/\//g, '_')
       .replace(/=+$/, '');
 
-    await this.gmail.users.messages.send({
+    const result = await this.gmail.users.messages.send({
       userId: 'me',
       requestBody: {
         raw: encodedMessage,
       },
     });
+
+    return { providerMessageId: result.data.id ?? undefined };
   }
 }

@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { EmailStatus } from '../../common/enums/email-status.enum';
 import { ProviderType } from '../../common/enums/provider-type.enum';
+import { EmailOrigin } from '../../common/enums/email-origin.enum';
 
 export type EmailLogDocument = EmailLog & Document;
 
@@ -9,6 +10,12 @@ export type EmailLogDocument = EmailLog & Document;
 export class EmailLog {
   @Prop({ required: true })
   appId!: string;
+
+  @Prop({ required: true, enum: EmailOrigin })
+  origin!: EmailOrigin;
+
+  @Prop({ required: false, type: String, default: null })
+  userId?: string | null;
 
   @Prop({ required: true })
   to!: string;
@@ -25,6 +32,9 @@ export class EmailLog {
   @Prop({ required: true, enum: ProviderType })
   provider!: ProviderType;
 
+  @Prop({ required: false, type: String })
+  mailAccountId?: string;
+
   @Prop({
     required: true,
     enum: EmailStatus,
@@ -34,6 +44,18 @@ export class EmailLog {
 
   @Prop({ required: false })
   errorMessage?: string;
+
+  @Prop({ required: false })
+  providerMessageId?: string;
+
+  @Prop({ required: false, type: [String] })
+  acceptedRecipients?: string[];
+
+  @Prop({ required: false, type: [String] })
+  rejectedRecipients?: string[];
+
+  @Prop({ required: false })
+  providerResponse?: string;
 
   @Prop({ required: false })
   from?: string;

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { setServers } from 'node:dns';
 import cookieParser from 'cookie-parser';
@@ -47,6 +48,21 @@ async function createApplication(): Promise<INestApplication> {
       transform: true,
     }),
   );
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('NestJS Mailer Worker API')
+    .setDescription('Manage applications and mail accounts, then send and inspect email logs.')
+    .setVersion('1.0')
+    .addApiKey(
+      { type: 'apiKey', name: 'X-API-KEY', in: 'header' },
+      'api-key',
+    )
+    .addSecurityRequirements('api-key')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
 
   return app;
 }
