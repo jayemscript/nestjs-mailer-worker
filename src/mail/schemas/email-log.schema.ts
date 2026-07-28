@@ -5,7 +5,7 @@ import { ProviderType } from '../../common/enums/provider-type.enum';
 
 export type EmailLogDocument = EmailLog & Document;
 
-@Schema({ timestamps: true, collection: 'email_logs' })
+@Schema({ timestamps: true, collection: 'mail_logs' })
 export class EmailLog {
   @Prop({ required: true })
   appId!: string;
