@@ -78,7 +78,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(port);
 
   console.log(
-    `[nestjs-mailer-worker] running on port ${port} | mode: ${nodeEnv}`,
+    `MAILER SERVICE running on port ${port} | mode: ${nodeEnv}`,
   );
   console.log(`Health: http://localhost:${port}`);
 }
