@@ -24,25 +24,28 @@ export class MailService {
   ) {}
 
   async send(dto: SendEmailDto): Promise<EmailLog> {
-    const mailAccount = dto.mailAccountId
-      ? await this.mailAccountsService.resolveForApplication(dto.mailAccountId, dto.appId)
-      : undefined;
-    const provider = this.getProvider(dto.provider, mailAccount);
-    const log = await this.emailLogModel.create({
-      appId: dto.appId,
-      origin: dto.origin,
-      userId: dto.origin === EmailOrigin.USER ? dto.userId : null,
-      to: dto.to,
-      subject: dto.subject,
-      html: dto.html,
-      text: dto.text,
-      from: dto.from,
-      provider,
-      mailAccountId: mailAccount?.id,
-      status: EmailStatus.PENDING,
-    });
+    let mailAccount: ResolvedMailAccount | undefined;
+    let log: EmailLogDocument | undefined;
 
     try {
+      mailAccount = dto.mailAccountId
+        ? await this.mailAccountsService.resolveForApplication(dto.mailAccountId, dto.appId)
+        : undefined;
+      const provider = this.getProvider(dto.provider, mailAccount);
+      log = await this.emailLogModel.create({
+        appId: dto.appId,
+        origin: dto.origin,
+        userId: dto.origin === EmailOrigin.USER ? dto.userId : null,
+        to: dto.to,
+        subject: dto.subject,
+        html: dto.html,
+        text: dto.text,
+        from: dto.from,
+        provider,
+        mailAccountId: mailAccount?.id,
+        status: EmailStatus.PENDING,
+      });
+
       const delivery = await this.providerService.send(provider, {
         to: dto.to,
         subject: dto.subject,
@@ -70,6 +73,10 @@ export class MailService {
 
       this.logger.log(`Email sent to ${dto.to}`);
     } catch (error) {
+      if (!log) {
+        log = await this.createFailedSetupLog(dto, mailAccount, error);
+      }
+
       log.status = EmailStatus.FAILED;
       log.errorMessage =
         error instanceof Error ? error.message : 'Unknown email error';
@@ -85,6 +92,37 @@ export class MailService {
     }
 
     return log;
+  }
+
+  private async createFailedSetupLog(
+    dto: SendEmailDto,
+    mailAccount: ResolvedMailAccount | undefined,
+    error: unknown,
+  ): Promise<EmailLogDocument> {
+    const configuredProvider = this.configService.get<string>(
+      'mail.provider',
+      ProviderType.GMAIL,
+    );
+    const provider = Object.values(ProviderType).includes(
+      configuredProvider as ProviderType,
+    )
+      ? (configuredProvider as ProviderType)
+      : ProviderType.GMAIL;
+
+    return this.emailLogModel.create({
+      appId: dto.appId,
+      origin: dto.origin,
+      userId: dto.origin === EmailOrigin.USER ? dto.userId : null,
+      to: dto.to,
+      subject: dto.subject,
+      html: dto.html,
+      text: dto.text,
+      from: dto.from,
+      provider: mailAccount?.provider ?? dto.provider ?? provider,
+      mailAccountId: mailAccount?.id ?? dto.mailAccountId,
+      status: EmailStatus.FAILED,
+      errorMessage: error instanceof Error ? error.message : 'Unknown email setup error',
+    });
   }
 
   async sendBulk(dtos: SendEmailDto[]): Promise<EmailLog[]> {
