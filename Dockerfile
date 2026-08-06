@@ -18,7 +18,7 @@ RUN pnpm install \
 COPY . .
 
 # Allow Node.js to use more memory during the NestJS build
-ENV NODE_OPTIONS="--max-old-space-size=1536"
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 RUN pnpm run build
 
